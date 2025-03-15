@@ -85,6 +85,7 @@ namespace Docosoft.Tests
         [Fact]
         private void Put_ShouldUpdateUserToDatabase_DocosoftUser()
         {
+            //arrange
             DocosoftUser? updatedUser = GetInitiaUsers().FirstOrDefault(u => u.Id == 2);
             updatedUser.FirstName = "John";
 
@@ -109,9 +110,10 @@ namespace Docosoft.Tests
         [InlineData(2)]
         private void Delete_ShouldRemoveUserToDatabase_bool(int id)
         {
-            var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
+            //arrange
+            Mock<IDocosoftUserManager> docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
             docosoftUserManagerMock.Setup(m => m.DeleteUser(It.IsAny<int>())).ReturnsAsync(true);
-            var docosoftUserController = DocosoftUserControllerInit(docosoftUserManagerMock);
+            DocosoftUserController docosoftUserController = DocosoftUserControllerInit(docosoftUserManagerMock);
 
             //act
             var result = docosoftUserController.DeleteUser(id)?.Result.Result;
