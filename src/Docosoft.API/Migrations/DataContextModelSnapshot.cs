@@ -17,7 +17,7 @@ namespace Docosoft.API.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
 
-            modelBuilder.Entity("Docosoft.API.Models.DocosoftUser", b =>
+            modelBuilder.Entity("Docosoft.API.Core.Models.DocosoftUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,6 +43,9 @@ namespace Docosoft.API.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("DocosoftUsers");
                 });

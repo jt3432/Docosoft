@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Docosoft.API.Controllers.v1
 {
     [Route("api/v1/[controller]")]
-    [ApiController]    
+    [ApiController]
     public class DocosoftUserController(IDocosoftUserManager docosoftUserManager) : ControllerBase
     {
         private readonly IDocosoftUserManager _docosoftUserManager = docosoftUserManager;
@@ -38,7 +38,13 @@ namespace Docosoft.API.Controllers.v1
                 return BadRequest("User ID must be zero for new users!");
             }
 
-            DocosoftUser user = await _docosoftUserManager.AddUser(newUser);
+            DocosoftUser? user = await _docosoftUserManager.AddUser(newUser);
+
+            if (user is null)
+            {
+                return UnprocessableEntity("Could not add user. Confirm the email is unique.");
+            }
+
             return Ok(user);
         }
 
@@ -49,7 +55,7 @@ namespace Docosoft.API.Controllers.v1
 
             if (user is null)
             {
-                return NotFound("User not found");
+                return UnprocessableEntity("User not updated. Confirm that the user id is correct and the email is unique.");
             }
 
             return Ok(user);
@@ -62,10 +68,10 @@ namespace Docosoft.API.Controllers.v1
 
             if (!success)
             {
-                return NotFound("User not found");
+                return UnprocessableEntity("User not deleted.");
             }
 
-            return Ok(success);
+            return Ok("User deleted.");
         }
     }
 }

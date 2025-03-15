@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(options => {
-    options.UseSqlite(builder.Configuration.GetConnectionString("defaultDbDSN"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("defaultDbDSN"), b => b.MigrationsAssembly("Docosoft.API"));
 });
 
 builder.Services.AddTransient<ISQLiteResourceAccess, SQLiteResourceAccess>();

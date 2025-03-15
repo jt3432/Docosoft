@@ -7,6 +7,7 @@ namespace Docosoft.API.Core.ResourceAccess
     public interface ISQLiteResourceAccess
     {
         bool UserExists(int id);
+        bool UserExists(string email);
         Task<DocosoftUser?> FindUser(int id);
         Task<IEnumerable<DocosoftUser>> FindUsers();
         Task<DocosoftUser> AddUser(DocosoftUser user);
@@ -22,6 +23,12 @@ namespace Docosoft.API.Core.ResourceAccess
         public bool UserExists(int id)
         {
             bool exists = _dataContext.DocosoftUsers.Any(u => u.Id == id);
+            return exists;
+        }
+
+        public bool UserExists(string email)
+        {
+            bool exists = _dataContext.DocosoftUsers.Any(u => u.Email.ToLower() == email.ToLower());
             return exists;
         }
 

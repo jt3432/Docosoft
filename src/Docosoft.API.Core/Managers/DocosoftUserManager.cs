@@ -4,10 +4,10 @@ using Docosoft.API.Core.ResourceAccess;
 namespace Docosoft.API.Core.Managers
 {
     public interface IDocosoftUserManager
-    {        
+    {
         Task<DocosoftUser?> GetUser(int id);
         Task<IEnumerable<DocosoftUser>> GetAllUsers();
-        Task<DocosoftUser> AddUser(DocosoftUser user);
+        Task<DocosoftUser?> AddUser(DocosoftUser user);
         Task<DocosoftUser?> UpdateUser(DocosoftUser user);
         Task<bool> DeleteUser(int id);
     }
@@ -16,31 +16,52 @@ namespace Docosoft.API.Core.Managers
     {
         private readonly ISQLiteResourceAccess _sqliteResourceAccess = sqliteResourceAccess;
 
-        async public Task<DocosoftUser> AddUser(DocosoftUser newUser)
+        async public Task<DocosoftUser?> GetUser(int id)
         {
-            DocosoftUser user = await _sqliteResourceAccess.AddUser(newUser);
-            return user;
-        }        
+            return await _sqliteResourceAccess.FindUser(id);
+        }
 
         async public Task<IEnumerable<DocosoftUser>> GetAllUsers()
         {
             return await _sqliteResourceAccess.FindUsers();
         }
 
-        async public Task<DocosoftUser?> GetUser(int id)
+        async public Task<DocosoftUser?> AddUser(DocosoftUser newUser)
         {
-            return await _sqliteResourceAccess.FindUser(id);
+            DocosoftUser? user = default;
+
+            bool exists = _sqliteResourceAccess.UserExists(newUser.Email);
+
+            if (exists)
+            {
+                return user;
+            }
+
+            user = await _sqliteResourceAccess.AddUser(newUser);
+            return user;
         }
 
         async public Task<DocosoftUser?> UpdateUser(DocosoftUser updatedUser)
-        {            
-            DocosoftUser? user = default;
-            bool exist = _sqliteResourceAccess.UserExists(updatedUser.Id);
+        {
+            DocosoftUser? user = await _sqliteResourceAccess.FindUser(updatedUser.Id);
 
-            if (exist)
+            if (user is null)
             {
-                user = await _sqliteResourceAccess.UpdateUser(updatedUser);
+                return null;
             }
+
+            if (!user!.Email.Equals(updatedUser.Email) && _sqliteResourceAccess.UserExists(updatedUser.Email))
+            {
+                return null;
+            }
+
+            // TODO: Add AutoMapper to project
+            user.FirstName = updatedUser.FirstName;
+            user.LastName = updatedUser.LastName;
+            user.Title = updatedUser.Title;
+            user.Email = updatedUser.Email;
+
+            user = await _sqliteResourceAccess.UpdateUser(user);
 
             return user;
         }

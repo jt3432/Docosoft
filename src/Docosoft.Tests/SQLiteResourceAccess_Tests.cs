@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Docosoft.API.Core.Data;
-using Docosoft.API.Core.Managers;
+﻿using Docosoft.API.Core.Data;
 using Docosoft.API.Core.Models;
 using Docosoft.API.Core.ResourceAccess;
 using EntityFrameworkCoreMock;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 
 namespace Docosoft.Tests
 {

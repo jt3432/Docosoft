@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace Docosoft.API.Core.Models
+﻿namespace Docosoft.API.Core.Models
 {    public class DocosoftUser
     {
         public int Id { get; set; }

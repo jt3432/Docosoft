@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docosoft.API", "Docosoft.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docosoft.Tests", "Docosoft.Tests\Docosoft.Tests.csproj", "{9220130B-14E4-F967-5547-F3B1B9CC0D25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docosoft.API.Core", "Docosoft.API.Core\Docosoft.API.Core.csproj", "{B417B2FF-DB78-4A55-ABF6-FEA7FF9EE8D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docosoft.API.Core", "Docosoft.API.Core\Docosoft.API.Core.csproj", "{A45FA552-AC5F-7F3C-CACF-CEF22F92BBE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{9220130B-14E4-F967-5547-F3B1B9CC0D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9220130B-14E4-F967-5547-F3B1B9CC0D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9220130B-14E4-F967-5547-F3B1B9CC0D25}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B417B2FF-DB78-4A55-ABF6-FEA7FF9EE8D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B417B2FF-DB78-4A55-ABF6-FEA7FF9EE8D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B417B2FF-DB78-4A55-ABF6-FEA7FF9EE8D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B417B2FF-DB78-4A55-ABF6-FEA7FF9EE8D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A45FA552-AC5F-7F3C-CACF-CEF22F92BBE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A45FA552-AC5F-7F3C-CACF-CEF22F92BBE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A45FA552-AC5F-7F3C-CACF-CEF22F92BBE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A45FA552-AC5F-7F3C-CACF-CEF22F92BBE8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
