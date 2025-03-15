@@ -87,7 +87,7 @@ namespace Docosoft.Tests
         {
             //arrange
             DocosoftUser? updatedUser = GetInitiaUsers().FirstOrDefault(u => u.Id == 2);
-            updatedUser.FirstName = "John";
+            updatedUser!.FirstName = "John";
 
             var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
             docosoftUserManagerMock.Setup(m => m.UpdateUser(It.IsAny<DocosoftUser>())).ReturnsAsync(updatedUser);
@@ -102,7 +102,7 @@ namespace Docosoft.Tests
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.NotNull(value);
-            Assert.Equal(value?.FirstName, "John");
+            Assert.Equal("John", value?.FirstName);
         }
 
         [Theory]
@@ -118,7 +118,7 @@ namespace Docosoft.Tests
             //act
             var result = docosoftUserController.DeleteUser(id)?.Result.Result;
             var okResult = result as OkObjectResult;
-            bool? value = (bool)okResult?.Value;
+            bool? value = (bool?)okResult?.Value;
 
             //assert
             Assert.NotNull(okResult);
