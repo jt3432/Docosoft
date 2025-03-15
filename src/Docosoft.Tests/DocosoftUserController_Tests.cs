@@ -118,13 +118,13 @@ namespace Docosoft.Tests
             //act
             var result = docosoftUserController.DeleteUser(id)?.Result.Result;
             var okResult = result as OkObjectResult;
-            bool? value = (bool?)okResult?.Value;
+            string? value = (string?)okResult?.Value;
 
             //assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.NotNull(value);
-            Assert.True(value);
+            Assert.Equal("User deleted.", value);
         }
 
         private DocosoftUserController DocosoftUserControllerInit(Mock<IDocosoftUserManager> docosoftUserManagerMock)
