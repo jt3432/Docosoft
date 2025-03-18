@@ -1,5 +1,9 @@
 ﻿using Docosoft.API.Core.Managers;
 using Docosoft.API.Core.Models;
+using Docosoft.API.Core.Models.DTO;
+using Docosoft.API.Factories;
+using Docosoft.API.Models.Request;
+using Docosoft.API.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Docosoft.API.Controllers.v1
@@ -18,60 +22,65 @@ namespace Docosoft.API.Controllers.v1
         }
 
         [HttpGet("{id}")]
-        async public Task<ActionResult<DocosoftUser>> GetUser(int id)
+        async public Task<IActionResult> GetUser(int id)
         {
-            DocosoftUser? user = await _docosoftUserManager.GetUser(id);
+            DocosoftUserDTO userDTO = await _docosoftUserManager.GetUser(id);
 
-            if (user is null)
+            if (userDTO.Success)
             {
-                return NotFound("User not found");
+                return Ok(ApiResponseFactory.CreateSuccess<DocosoftUser>(userDTO.User));                
             }
 
-            return Ok(user);
+            return NotFound(ApiResponseFactory.CreateError(userDTO.ErrorMessage));
         }
 
         [HttpPost]
-        async public Task<ActionResult<DocosoftUser>> AddUser([FromBody]DocosoftUser newUser)
+        async public Task<IActionResult> AddUser([FromBody]NewDocosoftUserRequest request)
         {
-            if(newUser.Id != 0)
+            // Add AutoMapper 
+            DocosoftUser newUser = new DocosoftUser()
+            {                 
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                Title = request.Title
+            };
+
+            DocosoftUserDTO? userDTO = await _docosoftUserManager.AddUser(newUser);
+
+            if (userDTO.Success)
             {
-                return BadRequest("User ID must be zero for new users!");
+                return Ok(ApiResponseFactory.CreateSuccess<DocosoftUser>(userDTO.User));
             }
 
-            DocosoftUser? user = await _docosoftUserManager.AddUser(newUser);
-
-            if (user is null)
-            {
-                return UnprocessableEntity("Could not add user. Confirm the email is unique.");
-            }
-
-            return Ok(user);
+            return UnprocessableEntity(ApiResponseFactory.CreateError(userDTO.ErrorMessage));            
         }
 
         [HttpPut]
-        async public Task<ActionResult<DocosoftUser?>> UpdateUser([FromBody]DocosoftUser updatedUser)
+        async public Task<IActionResult> UpdateUser([FromBody]DocosoftUser updatedUser)
         {
-            DocosoftUser? user = await _docosoftUserManager.UpdateUser(updatedUser);
+            DocosoftUserDTO userDTO = await _docosoftUserManager.UpdateUser(updatedUser);
 
-            if (user is null)
+            if (userDTO.Success)
             {
-                return UnprocessableEntity("User not updated. Confirm that the user id is correct and the email is unique.");
+                return Ok(ApiResponseFactory.CreateSuccess<DocosoftUser>(userDTO.User));
+                
             }
 
-            return Ok(user);
+            return UnprocessableEntity(ApiResponseFactory.CreateError(userDTO.ErrorMessage));
         }
 
         [HttpDelete("{id}")]
-        async public Task<ActionResult<bool>> DeleteUser(int id)
+        async public Task<IActionResult> DeleteUser(int id)
         {
-            bool success = await _docosoftUserManager.DeleteUser(id);
+            DocosoftUserDTO userDto = await _docosoftUserManager.DeleteUser(id);
 
-            if (!success)
+            if (userDto.Success)
             {
-                return UnprocessableEntity("User not deleted.");
+                return Ok(ApiResponseFactory.CreateSuccess<DocosoftUser>(null, "User deleted."));                
             }
 
-            return Ok("User deleted.");
+            return NotFound(ApiResponseFactory.CreateError(userDto.ErrorMessage));
         }
     }
 }

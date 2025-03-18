@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Docosoft.API.Core.Managers;
+﻿using Docosoft.API.Core.Managers;
 using Docosoft.API.Core.Models;
+using Docosoft.API.Core.Models.DTO;
 using Docosoft.API.Core.ResourceAccess;
 using Moq;
 
@@ -11,7 +10,7 @@ namespace Docosoft.Tests
     {
         [Theory]
         [InlineData(1)]
-        public void GetUser_ShouldReturnUserWhenGivenAValueId_DocosoftUser(int id)
+        public void GetUser_ShouldReturnUserWhenGivenAValueId_DocosoftUserDTO(int id)
         {
             //arrange
             var sqliteResourceAccess = new Mock<ISQLiteResourceAccess>();
@@ -19,16 +18,17 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            var user = _docosoftUserManager.GetUser(id)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.GetUser(id)?.Result;
 
             //assert
-            Assert.NotNull(user);
-            Assert.Equal(id, user.Id);
+            Assert.NotNull(userDTO!.User);
+            Assert.True(userDTO.Success);
+            Assert.Equal(id, userDTO.User.Id);
         }
 
         [Theory]
         [InlineData(100)]
-        public void GetUser_ShouldReturnNullWhenGivenAnInvalidId_null(int id)
+        public void GetUser_ShouldReturnNullWhenGivenAnInvalidId_DocosoftUserDTO(int id)
         {
             //arrange
             var sqliteResourceAccess = new Mock<ISQLiteResourceAccess>();
@@ -36,10 +36,11 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            var user = _docosoftUserManager.GetUser(id)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.GetUser(id)?.Result;
 
             //assert
-            Assert.Null(user);
+            Assert.False(userDTO!.Success);
+            Assert.Null(userDTO!.User);
         }
 
 
@@ -60,7 +61,7 @@ namespace Docosoft.Tests
         }
 
         [Fact]
-        public void AddUser_ShouldAddANewUserToDatabase_DocosoftUser()
+        public void AddUser_ShouldAddANewUserToDatabase_DocosoftUserDTO()
         {
             // arrange
             DocosoftUser newUser = new DocosoftUser()
@@ -78,16 +79,17 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            DocosoftUser? user = _docosoftUserManager.AddUser(newUser)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.AddUser(newUser)?.Result;
 
             //assert
-            Assert.NotNull(user);
-            Assert.Equal("Peter", user.FirstName);
-            Assert.Equal(3, user.Id);
+            Assert.True(userDTO!.Success);
+            Assert.NotNull(userDTO.User);
+            Assert.Equal("Peter", userDTO.User.FirstName);
+            Assert.Equal(3, userDTO.User.Id);
         }
 
         [Fact]
-        public void AddUser_ShouldNullIfEmailIsNotUnique_null()
+        public void AddUser_ShouldNullIfEmailIsNotUnique_DocosoftUserDTO()
         {
             // arrange
             DocosoftUser newUser = new DocosoftUser()
@@ -106,14 +108,15 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            DocosoftUser? user = _docosoftUserManager.AddUser(newUser)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.AddUser(newUser)?.Result;
 
             //assert
-            Assert.Null(user);
+            Assert.False(userDTO!.Success);
+            Assert.Null(userDTO!.User);
         }
 
         [Fact]
-        public void UpdateUser_ShouldUpdateExistingUserToDatabase_DocosoftUser()
+        public void UpdateUser_ShouldUpdateExistingUserToDatabase_DocosoftUserDTO()
         {
             // arrange
             DocosoftUser userToUpdate = new DocosoftUser()
@@ -133,16 +136,17 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            DocosoftUser? user = _docosoftUserManager.UpdateUser(userToUpdate)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.UpdateUser(userToUpdate)?.Result;
 
             //assert
-            Assert.NotNull(user);
-            Assert.Equal("John", user.FirstName);
-            Assert.Equal(2, user.Id);
+            Assert.True(userDTO!.Success);
+            Assert.NotNull(userDTO!.User);
+            Assert.Equal("John", userDTO!.User.FirstName);
+            Assert.Equal(2, userDTO!.User.Id);
         }
 
         [Fact]
-        public void UpdateUser_ShouldReturnNullIfEmailIsDuplicate_Null()
+        public void UpdateUser_ShouldReturnNullIfEmailIsDuplicate_DocosoftUserDTO()
         {
             // arrange
             DocosoftUser userToUpdate = new DocosoftUser()
@@ -162,14 +166,15 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            DocosoftUser? user = _docosoftUserManager.UpdateUser(userToUpdate)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.UpdateUser(userToUpdate)?.Result;
 
             //assert
-            Assert.Null(user);
+            Assert.False(userDTO!.Success);
+            Assert.Null(userDTO!.User);
         }
 
         [Fact]
-        public void UpdateUser_ShouldReturnNullIfIdIsInvalid_Null()
+        public void UpdateUser_ShouldReturnNullIfIdIsInvalid_DocosoftUserDTO()
         {
             // arrange
             DocosoftUser userToUpdate = new DocosoftUser()
@@ -189,15 +194,16 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            DocosoftUser? user = _docosoftUserManager.UpdateUser(userToUpdate)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.UpdateUser(userToUpdate)?.Result;
 
             //assert
-            Assert.Null(user);
+            Assert.False(userDTO!.Success);
+            Assert.Null(userDTO!.User);
         }
 
         [Theory]
         [InlineData(2)]
-        public void DeleteUser_ShouldRemoveUserFromDatabase_bool(int id)
+        public void DeleteUser_ShouldRemoveUserFromDatabase_DocosoftUserDTO(int id)
         {
             //arrange
             List<DocosoftUser> users = new List<DocosoftUser>()
@@ -226,18 +232,17 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            bool? success = _docosoftUserManager.DeleteUser(id)?.Result;
-            DocosoftUser? user = _docosoftUserManager.GetUser(id)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.DeleteUser(id)?.Result;
 
 
             //assert
-            Assert.True(success);
+            Assert.True(userDTO!.Success);
             Assert.DoesNotContain(users, u => u.Equals(id));
         }
 
         [Theory]
         [InlineData(100)]
-        public void DeleteUser_ShouldReturnFalseIfUserDoesNotExist_bool(int id)
+        public void DeleteUser_ShouldReturnFalseIfUserDoesNotExist_DocosoftUserDTO(int id)
         {
             //arrange
             List<DocosoftUser> users = new List<DocosoftUser>()
@@ -266,12 +271,11 @@ namespace Docosoft.Tests
             IDocosoftUserManager _docosoftUserManager = new DocosoftUserManager(sqliteResourceAccess.Object);
 
             //act
-            bool? success = _docosoftUserManager.DeleteUser(id)?.Result;
-            DocosoftUser? user = _docosoftUserManager.GetUser(id)?.Result;
+            DocosoftUserDTO? userDTO = _docosoftUserManager.DeleteUser(id)?.Result;
 
 
             //assert
-            Assert.False(success);
+            Assert.False(userDTO!.Success);
             Assert.DoesNotContain(users, u => u.Equals(id));
         }
 

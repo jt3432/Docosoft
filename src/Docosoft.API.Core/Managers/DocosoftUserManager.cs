@@ -1,24 +1,32 @@
 ﻿using Docosoft.API.Core.Models;
+using Docosoft.API.Core.Models.DTO;
 using Docosoft.API.Core.ResourceAccess;
 
 namespace Docosoft.API.Core.Managers
 {
     public interface IDocosoftUserManager
     {
-        Task<DocosoftUser?> GetUser(int id);
+        Task<DocosoftUserDTO> GetUser(int id);
         Task<IEnumerable<DocosoftUser>> GetAllUsers();
-        Task<DocosoftUser?> AddUser(DocosoftUser user);
-        Task<DocosoftUser?> UpdateUser(DocosoftUser user);
-        Task<bool> DeleteUser(int id);
+        Task<DocosoftUserDTO> AddUser(DocosoftUser user);
+        Task<DocosoftUserDTO> UpdateUser(DocosoftUser user);
+        Task<DocosoftUserDTO> DeleteUser(int id);
     }
 
     public class DocosoftUserManager(ISQLiteResourceAccess sqliteResourceAccess) : IDocosoftUserManager
     {
         private readonly ISQLiteResourceAccess _sqliteResourceAccess = sqliteResourceAccess;
 
-        async public Task<DocosoftUser?> GetUser(int id)
+        async public Task<DocosoftUserDTO> GetUser(int id)
         {
-            return await _sqliteResourceAccess.FindUser(id);
+            DocosoftUser? user = await _sqliteResourceAccess.FindUser(id);
+
+            return new DocosoftUserDTO()
+            {
+                User = user,
+                ErrorMessage = user is null ? "User not found." : String.Empty,
+                Success = user is not null,
+            };
         }
 
         async public Task<IEnumerable<DocosoftUser>> GetAllUsers()
@@ -26,33 +34,47 @@ namespace Docosoft.API.Core.Managers
             return await _sqliteResourceAccess.FindUsers();
         }
 
-        async public Task<DocosoftUser?> AddUser(DocosoftUser newUser)
+        async public Task<DocosoftUserDTO> AddUser(DocosoftUser newUser)
         {
             DocosoftUser? user = default;
+            DocosoftUserDTO userDTO = new DocosoftUserDTO() {
+                Success = false
+            };
 
             bool exists = _sqliteResourceAccess.UserExists(newUser.Email);
 
             if (exists)
             {
-                return user;
+                userDTO.ErrorMessage = "Duplicate user email. Emails must be unique.";
+                return userDTO;
             }
 
             user = await _sqliteResourceAccess.AddUser(newUser);
-            return user;
+            userDTO.User = user;
+            userDTO.Success = true;
+
+            return userDTO;
         }
 
-        async public Task<DocosoftUser?> UpdateUser(DocosoftUser updatedUser)
+        async public Task<DocosoftUserDTO> UpdateUser(DocosoftUser updatedUser)
         {
+            var userDTO = new DocosoftUserDTO()
+            {
+                Success = false,
+            };
+
             DocosoftUser? user = await _sqliteResourceAccess.FindUser(updatedUser.Id);
 
             if (user is null)
             {
-                return null;
+                userDTO.ErrorMessage = "User not found!";
+                return userDTO;
             }
 
             if (!user!.Email.Equals(updatedUser.Email) && _sqliteResourceAccess.UserExists(updatedUser.Email))
             {
-                return null;
+                userDTO.ErrorMessage = "Duplicate email, email must be unique!";
+                return userDTO;
             }
 
             // TODO: Add AutoMapper to project
@@ -61,21 +83,34 @@ namespace Docosoft.API.Core.Managers
             user.Title = updatedUser.Title;
             user.Email = updatedUser.Email;
 
-            user = await _sqliteResourceAccess.UpdateUser(user);
+            userDTO.User = await _sqliteResourceAccess.UpdateUser(user);
 
-            return user;
+            userDTO.Success = true;
+
+            return userDTO;
         }
 
-        async public Task<bool> DeleteUser(int id)
+        async public Task<DocosoftUserDTO> DeleteUser(int id)
         {
+            var userDTO = new DocosoftUserDTO()
+            {
+                Success = false,
+            };
+
             DocosoftUser? user = await _sqliteResourceAccess.FindUser(id);
 
             if (user is null)
             {
-                return false;
+                userDTO.ErrorMessage = "User not found!";
+                return userDTO;
             }
 
-            return await _sqliteResourceAccess.RemoveUser(user);
+            bool success = await _sqliteResourceAccess.RemoveUser(user);
+
+            userDTO.Success = success;
+            userDTO.ErrorMessage = success ? String.Empty : "User not removed.";
+
+            return userDTO;
         }
     }
 }

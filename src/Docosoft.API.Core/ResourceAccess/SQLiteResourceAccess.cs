@@ -1,5 +1,6 @@
 ﻿using Docosoft.API.Core.Data;
 using Docosoft.API.Core.Models;
+using Docosoft.API.Core.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Docosoft.API.Core.ResourceAccess

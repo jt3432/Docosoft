@@ -1,6 +1,9 @@
 ﻿using Docosoft.API.Controllers.v1;
 using Docosoft.API.Core.Managers;
 using Docosoft.API.Core.Models;
+using Docosoft.API.Core.Models.DTO;
+using Docosoft.API.Models.Request;
+using Docosoft.API.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -29,103 +32,135 @@ namespace Docosoft.Tests
         }
 
 
-
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void Get_ShouldReturnAUserById_DocosoftUser(int id)
+        private void Get_ShouldReturnAUserById_ApiResponse(int id)
         {
             //arrange            
             var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
-            docosoftUserManagerMock.Setup(m => m.GetUser(It.IsAny<int>())).ReturnsAsync(GetInitiaUsers().FirstOrDefault(u => u.Id == id));
+            docosoftUserManagerMock.Setup(m => m.GetUser(It.IsAny<int>())).ReturnsAsync((int id) => {
+                DocosoftUser? user = GetInitiaUsers().FirstOrDefault(u => u.Id == id);
+                return new DocosoftUserDTO()
+                {
+                    User = user,
+                    Success = true
+                };
+             });
             var docosoftUserController = DocosoftUserControllerInit(docosoftUserManagerMock);
 
             //act
-            var result = docosoftUserController.GetUser(id)?.Result.Result;
+            var result = docosoftUserController.GetUser(id)?.Result;
             var okResult = result as OkObjectResult;
-            DocosoftUser? value = okResult?.Value as DocosoftUser;
+            SuccessResponse<DocosoftUser>? value = okResult?.Value as SuccessResponse<DocosoftUser>;
 
             //assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.NotNull(value);
-            Assert.Equal(id, value.Id);
+            Assert.Equal(id, value.Data?.Id);
         }
 
         [Fact]
-        private void Post_ShouldAddUserToDatabase_DocosoftUser()
+        private void Post_ShouldAddUserToDatabase_ApiResponse()
         {
             //arrange            
-            DocosoftUser newUser = new DocosoftUser()
+            NewDocosoftUserRequest request = new NewDocosoftUserRequest()
             {
-                Id = 0,
                 FirstName = "Peter",
                 LastName = "Piper",
                 Title = "Developer",
-                Email = "peter.piper@docosoft.com",
-                Created = DateTime.Now
+                Email = "peter.piper@docosoft.com"
+            };
+            DocosoftUser newUser = new DocosoftUser()
+            {
+                Id = 3,
+                FirstName = "Peter",
+                LastName = "Piper",
+                Title = "Developer",
+                Email = "peter.piper@docosoft.com"
             };
 
             var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
-            docosoftUserManagerMock.Setup(m => m.AddUser(It.IsAny<DocosoftUser>())).ReturnsAsync((DocosoftUser newUser) => { newUser.Id = 3; return newUser; });
+            docosoftUserManagerMock.Setup(m => m.AddUser(It.IsAny<DocosoftUser>())).ReturnsAsync((DocosoftUser user) => { 
+                return new DocosoftUserDTO()
+                {
+                    User = newUser,
+                    Success = true
+                };
+            });
             var docosoftUserController = DocosoftUserControllerInit(docosoftUserManagerMock);
 
             //act
-            var result = docosoftUserController.AddUser(newUser)?.Result.Result;
+            var result = docosoftUserController.AddUser(request)?.Result;
             var okResult = result as OkObjectResult;
-            DocosoftUser? value = okResult?.Value as DocosoftUser;
+            SuccessResponse<DocosoftUser>? value = okResult?.Value as SuccessResponse<DocosoftUser>;
 
             //assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.NotNull(value);
-            Assert.True(value.Id > 0);
+            Assert.True(value.Data?.Id > 0);
+            Assert.Equal(3, value.Data.Id);
         }
 
         [Fact]
-        private void Put_ShouldUpdateUserToDatabase_DocosoftUser()
+        private void Put_ShouldUpdateUserToDatabase_ApiResponse()
         {
             //arrange
             DocosoftUser? updatedUser = GetInitiaUsers().FirstOrDefault(u => u.Id == 2);
             updatedUser!.FirstName = "John";
 
             var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
-            docosoftUserManagerMock.Setup(m => m.UpdateUser(It.IsAny<DocosoftUser>())).ReturnsAsync(updatedUser);
+            docosoftUserManagerMock.Setup(m => m.UpdateUser(It.IsAny<DocosoftUser>())).ReturnsAsync((DocosoftUser user) => {
+                return new DocosoftUserDTO()
+                {
+                    User = updatedUser,
+                    Success = true
+                };
+            });
             var docosoftUserController = DocosoftUserControllerInit(docosoftUserManagerMock);
 
             //act
-            var result = docosoftUserController.UpdateUser(updatedUser)?.Result.Result;
+            var result = docosoftUserController.UpdateUser(updatedUser)?.Result;
             var okResult = result as OkObjectResult;
-            DocosoftUser? value = okResult?.Value as DocosoftUser;
+            SuccessResponse<DocosoftUser>? value = okResult?.Value as SuccessResponse<DocosoftUser>;
 
             //assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.NotNull(value);
-            Assert.Equal("John", value?.FirstName);
+            Assert.Equal("John", value.Data?.FirstName);
         }
 
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void Delete_ShouldRemoveUserToDatabase_bool(int id)
+        private void Delete_ShouldRemoveUserToDatabase_ApiResponse(int id)
         {
             //arrange
             Mock<IDocosoftUserManager> docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
-            docosoftUserManagerMock.Setup(m => m.DeleteUser(It.IsAny<int>())).ReturnsAsync(true);
+            docosoftUserManagerMock.Setup(m => m.DeleteUser(It.IsAny<int>())).ReturnsAsync((int id) => {
+                return new DocosoftUserDTO()
+                {
+                    User = null,
+                    Success = true
+                };
+            });
             DocosoftUserController docosoftUserController = DocosoftUserControllerInit(docosoftUserManagerMock);
 
             //act
-            var result = docosoftUserController.DeleteUser(id)?.Result.Result;
+            var result = docosoftUserController.DeleteUser(id)?.Result;
             var okResult = result as OkObjectResult;
-            string? value = (string?)okResult?.Value;
+            SuccessResponse<DocosoftUser>? value = (SuccessResponse<DocosoftUser>?)okResult?.Value;
 
             //assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.NotNull(value);
-            Assert.Equal("User deleted.", value);
+            Assert.True(value.Success);
         }
+
 
         private DocosoftUserController DocosoftUserControllerInit(Mock<IDocosoftUserManager> docosoftUserManagerMock)
         {            
