@@ -20,7 +20,7 @@ namespace Docosoft.Tests
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void UserExists_ShouldReturnTrueIfUserExists_bool(int id)
+        public void UserExists_ShouldReturnTrueIfUserExists_bool(int id)
         {
             //arrange
 
@@ -34,7 +34,7 @@ namespace Docosoft.Tests
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void FindUser_ShouldReturnUserById_DocosoftUser(int id)
+        public void FindUser_ShouldReturnUserById_DocosoftUser(int id)
         {
             //arrange
 
@@ -46,7 +46,7 @@ namespace Docosoft.Tests
         }
 
         [Fact]
-        private void AddUser_ShouldAddUserToDatabase_DocosoftUser()
+        public void AddUser_ShouldAddUserToDatabase_DocosoftUser()
         {
             //arrange            
             DocosoftUser newUser = new DocosoftUser()
@@ -68,7 +68,7 @@ namespace Docosoft.Tests
         }
 
         [Fact]
-        private void UpdateUser_ShouldSaveChangesToUserToDatabase_DocosoftUser()
+        public void UpdateUser_ShouldSaveChangesToUserToDatabase_DocosoftUser()
         {
             //arrange            
             DocosoftUser? userToUpdate = _sqliteResourceAccess.FindUser(2)?.Result;
@@ -86,7 +86,7 @@ namespace Docosoft.Tests
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void RemoveUser_ShouldRemoveUserFromDatabase_bool(int id)
+        public void RemoveUser_ShouldRemoveUserFromDatabase_bool(int id)
         {
             //arrange            
             DocosoftUser? userToRemove = _sqliteResourceAccess.FindUser(id)?.Result;

@@ -12,7 +12,7 @@ namespace Docosoft.Tests
     public class DocosoftUserController_Tests
     {
         [Fact]
-        private void GetAll_ShouldReturnAllUsers_DocosoftUsers()
+        public void GetAll_ShouldReturnAllUsers_DocosoftUsers()
         {
             //arrange            
             var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
@@ -35,7 +35,7 @@ namespace Docosoft.Tests
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void Get_ShouldReturnAUserById_ApiResponse(int id)
+        public void Get_ShouldReturnAUserById_ApiResponse(int id)
         {
             //arrange            
             var docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
@@ -62,7 +62,7 @@ namespace Docosoft.Tests
         }
 
         [Fact]
-        private void Post_ShouldAddUserToDatabase_ApiResponse()
+        public void Post_ShouldAddUserToDatabase_ApiResponse()
         {
             //arrange            
             NewDocosoftUserRequest request = new NewDocosoftUserRequest()
@@ -105,7 +105,7 @@ namespace Docosoft.Tests
         }
 
         [Fact]
-        private void Put_ShouldUpdateUserToDatabase_ApiResponse()
+        public void Put_ShouldUpdateUserToDatabase_ApiResponse()
         {
             //arrange
             DocosoftUser? updatedUser = GetInitiaUsers().FirstOrDefault(u => u.Id == 2);
@@ -136,7 +136,7 @@ namespace Docosoft.Tests
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        private void Delete_ShouldRemoveUserToDatabase_ApiResponse(int id)
+        public void Delete_ShouldRemoveUserToDatabase_ApiResponse(int id)
         {
             //arrange
             Mock<IDocosoftUserManager> docosoftUserManagerMock = new Mock<IDocosoftUserManager>();
